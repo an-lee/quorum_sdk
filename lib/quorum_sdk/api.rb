@@ -7,7 +7,7 @@ module QuorumSdk
   # Wrapper for HTTP APIs
   class API
     attr_reader :group_id, :group_name, :consensus_type, :encryption_type, :app_key, :owner_pubkey, :signature,
-                :cipher, :urls, :timestamp
+                :cipher_key, :chain_urls
 
     def initialize(seed_url)
       r = QuorumSdk::Utils.parse_seed_url seed_url
@@ -19,11 +19,10 @@ module QuorumSdk
       @app_key = r[:app_key]
       @owner_pubkey = r[:owner_pubkey]
       @signature = r[:signature]
-      @cipher = r[:cipher]
-      @urls = r[:urls]
-      @timestamp = r[:timestamp]
+      @cipher_key = r[:cipher_key]
+      @chain_urls = r[:chain_urls]
 
-      @client = QuorumSdk::Client.new(@urls)
+      @client = QuorumSdk::Client.new(@chain_urls)
     end
 
     include QuorumSdk::API::LightNode

@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require 'addressable/uri'
+require 'active_support/all'
+require 'base64'
+require 'faraday'
+require 'faraday/retry'
+
 require_relative 'quorum_sdk/version'
 require_relative 'quorum_sdk/api'
 require_relative 'quorum_sdk/utils'

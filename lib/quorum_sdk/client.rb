@@ -7,8 +7,8 @@ module QuorumSdk
   class Client
     attr_reader :domains
 
-    def initialize(domains = [])
-      @domains = domains
+    def initialize(domains)
+      @domains = domains || []
     end
 
     def post

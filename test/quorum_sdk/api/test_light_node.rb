@@ -6,7 +6,7 @@ module QuorumSdk
   class API
     class TestLightNode < Minitest::Test
       def setup
-        @api = QuorumSdk::API.new ''
+        @api = QuorumSdk::API.new SEED_URL
       end
 
       def test_send_trx

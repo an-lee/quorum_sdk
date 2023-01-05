@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = 'A API wrapper for Quorum'
   spec.homepage = 'https://github.com/an-lee/quorum_sdk'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = '>= 3.2.0'
 
   spec.metadata['allowed_push_host'] = ''
 
@@ -32,6 +32,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Uncomment to register a new dependency of your gem
+  spec.add_dependency 'activesupport', '>= 5'
+  spec.add_dependency 'addressable', '~> 2'
+  spec.add_dependency 'faraday', '>= 2'
+  spec.add_dependency 'faraday-retry', '>= 2'
   spec.add_dependency 'google-protobuf', '~> 3'
 
   # For more information and examples about making a new gem, check out our
