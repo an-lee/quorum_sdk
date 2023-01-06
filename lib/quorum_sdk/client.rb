@@ -9,20 +9,19 @@ module QuorumSdk
 
     def initialize(domains)
       @domains = domains || []
+      @conn = Faraday.new(url: @domains.first) do |f|
+        f.request :json
+        f.response :json
+        f.response :logger
+      end
     end
 
-    def post
-      # TODO: http post
+    def post(path, **body)
+      @conn.post path, body.to_json
     end
 
-    def get
-      # TODO: http get
-    end
-
-    private
-
-    def request
-      # TODO: http request
+    def get(path, **params)
+      @conn.post path, **params
     end
   end
 end
