@@ -76,7 +76,7 @@ module QuorumSdk
         signature = key.sign [hash].pack('H*')
         msg.SenderSign = [signature].pack('H*')
         trx_json = {
-          TrxBytes: Base64.urlsafe_encode64(Quorum::Pb::Trx.encode(msg))
+          TrxBytes: Base64.strict_encode64(Quorum::Pb::Trx.encode(msg))
         }
         encrypted = aes_encrypt trx_json.to_json, key: kwargs[:cipher_key]
         Base64.strict_encode64(encrypted)
@@ -85,7 +85,7 @@ module QuorumSdk
       def decrypt_trx(cipher, **kwargs)
         cipher = Base64.strict_decode64 cipher
         trx_json = JSON.parse aes_decrypt(cipher, key: kwargs[:cipher_key])
-        trx_bytes = Base64.urlsafe_decode64 trx_json['TrxBytes']
+        trx_bytes = Base64.strict_decode64 trx_json['TrxBytes']
         trx = Quorum::Pb::Trx.decode trx_bytes
         public_key_compressed = Base64.urlsafe_decode64(trx.SenderPubkey).unpack1('H*')
         signature = trx.SenderSign.unpack1('H*')

@@ -14,7 +14,7 @@ module QuorumSdk
 
       def send_trx(trx_item)
         path = "api/v1/node/trx/#{group_id}"
-        client.post path, TrxItem: trx_item
+        client.post(path, TrxItem: trx_item).body
       end
 
       def list_trx(**kwargs)
@@ -32,13 +32,13 @@ module QuorumSdk
         }
 
         path = "api/v1/node/groupctn/#{group_id}"
-        client.post path, **payload
+        client.post(path, **payload).body
       end
 
       def chain_data
         # TODO: get chain data
         path = "api/v1/node/getchaindata/#{group_id}"
-        client.post path
+        client.post(path).body
       end
     end
   end

@@ -92,6 +92,7 @@ module QuorumSdk
 
     def test_decrypt_outside_trx
       seed = QuorumSdk::Utils.parse_seed_url SEED_URL
+      trx_id = 'f6eecbcf-fa99-4f6c-bfa5-6a265c761996'
       group_id = 'ecea1b71-c733-429f-88c9-6bb63378c490'
 
       trx_item = 'RkPbRmoAowX4k9NPE7g0+o2GZiqP+NC7uXX6/+95bqay8cV8QrYdDbDhAzam3OKB14JJLBCPcIlRg3qadMSTpMe7ETs+VJ4woHewxsuGQrBzc0fgMJ948vFMLxqvGIjqmgVG6XXFi+oAfE0zW0f4XTbgiYBR0NYvajUtuRVv0rqyt1wXt0M2uhQu7Ztz8HhmRYrMGRYj5Fbgr29G4HNQtIzro3DbgCJMa5Lm0jp9/ncIfTNsEWMC8kspYCMt4a7CKks1E+iUWMRrgSkXWfGVY+jQfz7Ds7ahiStAbp/C9df3ZnmHrGzKJAM2+lSoWxX+eChD11SiOLdzr2lkOKPH1Fqtuet9Xuc+RZU8IyWEv/HjX6ONbU8OMGG40YRpRUR18k7prICCAyO62EmwcJk1PXBgckKhS0OPaKNOZj1JITHdwBgyB9MBFy7owi2ALB+QnT70f8K5TltR9YJtNumdkVc24T6qkgMZT6aZhHWVJpEkMU3VAXQGtHlBD29A3uFg9lt0hShX3blmXJ1WHN4Bm3Fq7nbhJYxPK5EdYyY8ltrqBXMP4uVEjgNpAzgvpsMWZwfhvdTgwMBrkTg='
@@ -104,7 +105,7 @@ module QuorumSdk
 
       assert_equal 'Note', r[:data].type
       assert_equal 'what', r[:data].content
-      assert_equal 'f6eecbcf-fa99-4f6c-bfa5-6a265c761996', r[:trx].TrxId
+      assert_equal trx_id, r[:trx].TrxId
       assert_equal group_id, r[:trx].GroupId
     end
   end

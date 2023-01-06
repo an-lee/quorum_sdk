@@ -10,21 +10,21 @@ module QuorumSdk
       end
 
       def test_send_trx
+        key = Eth::Key.new
         object = {
           type: 'Note',
-          name: 'Note title',
-          content: 'Note body'
+          name: 'name',
+          content: 'content'
         }
         data = QuorumSdk::Utils.encode_object(**object)
-        trx = @api.build_trx(data:)
+        trx = @api.build_trx(data:, private_key: key.private_hex)
         r = @api.send_trx trx
-        refute_nil r.body
+        refute_nil r
       end
 
       def test_list_trx
         r = @api.list_trx
-        p r.body
-        refute_nil r.body
+        assert_instance_of Array, r
       end
     end
   end
