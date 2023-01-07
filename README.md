@@ -12,12 +12,24 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
+### Initilize
+
+```ruby
+# Initilize by seed url
+rum = QuorumSdk::API.new seed_url: "rum://...."
+
+# Initilize by config
+rum = QuorumSdk::API.new(
+    gropu_id: '',
+    gropu_name: '',
+    cipher_key: '',
+    chain_urls: ['', '']
+)
+```
+
 ### Send a trx
 
 ```ruby
-# initilize SDK
-rum = QuorumSdk::API.new "rum://...."
-
 # build a message
 msg = Quorum::Pb::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
 
@@ -39,9 +51,6 @@ rum.send_trx trx
 Build a activity message
 
 ```ruby
-# initilize SDK
-rum = QuorumSdk::API.new "rum://...."
-
 # build a Note type object
 note = Quorum::Pb::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
 
