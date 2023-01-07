@@ -43,7 +43,7 @@ Build a activity message
 rum = QuorumSdk::API.new "rum://...."
 
 # build a Note type object
-note = QuorumSdk::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
+note = QuorumSdk::Pb::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
 
 # build Activity object, wrapping Note object
 activity = Quorum::Pb::Activity.new(type: 'Create', object: note)
