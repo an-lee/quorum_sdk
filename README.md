@@ -15,24 +15,55 @@ If bundler is not being used to manage dependencies, install the gem by executin
 ### Send a trx
 
 ```ruby
+# initilize SDK
 rum = QuorumSdk::API.new "rum://...."
 
 # build a message
 msg = Quorum::Pb::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
 
 # prepare an ETH account
-account = Eth::Key.new
+account = QuorumSdk::Account.new
 
-# use a existed account
-account = Eth::Key.new priv: private_key
+# Or use a existed account
+# account = QuorumSdk::Account.new priv: private_key
 
 # build trx
 trx = rum.build_trx data: msg, private_key: account.private_hex
 
 # push trx to chain
 rum.send_trx trx
-# result: { trx_id: '...' }
+# output: { trx_id: '...' }
+
 ```
+
+Build a activity message
+
+```ruby
+# initilize SDK
+rum = QuorumSdk::API.new "rum://...."
+
+# build a Note type object
+note = QuorumSdk::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
+
+# build Activity object, wrapping Note object
+activity = Quorum::Pb::Activity.new(type: 'Create', object: note)
+
+# build Trx
+trx = rum.build_trx data: activity, private_key: account.private_hex
+
+# push trx to chain
+rum.send_trx trx
+# output: { trx_id: '...' }
+
+# list Trx on chain
+rum.list_trx
+# output: [{ trx_id: '...', Data: { type: 'Create', object: { type: 'Note', name: 'A title', content: 'Something awesome' }}}]
+
+```
+
+### Proto
+
+Check all available proto types in [chain_pb.rb](./lib/proto/chain_pb.rb) and [activity_stream_pb.rb](./lib/proto/activity_stream_pb.rb).
 
 ## Development
 

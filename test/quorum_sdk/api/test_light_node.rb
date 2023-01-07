@@ -16,13 +16,13 @@ module QuorumSdk
           return
         end
 
-        key = Eth::Key.new
+        account = QuorumSdk::Account.new
         data = Quorum::Pb::Object.new(
           type: 'Note',
           name: 'name',
           content: 'content'
         )
-        trx = @api.build_trx(data:, private_key: key.private_hex)
+        trx = @api.build_trx(data:, private_key: account.private_hex)
         r = @api.send_trx trx
         refute_nil r['trx_id']
       end
@@ -43,7 +43,7 @@ module QuorumSdk
           return
         end
 
-        key = Eth::Key.new
+        account = QuorumSdk::Account.new
         article = Quorum::Pb::Object.new(
           type: 'Article',
           name: 'title',
@@ -53,7 +53,7 @@ module QuorumSdk
           type: 'Create',
           object: article
         )
-        trx = @api.build_trx(data: activity, private_key: key.private_hex)
+        trx = @api.build_trx(data: activity, private_key: account.private_hex)
         r = @api.send_trx trx
         refute_nil r['trx_id']
       end
