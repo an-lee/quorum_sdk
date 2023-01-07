@@ -22,27 +22,66 @@ module QuorumSdk
       end
 
       def list_trx(**kwargs)
-        params = QuorumSdk::Utils.aes_encrypt({
+        params = {
+          group_id:,
           start_trx: kwargs[:start_trx],
-          num: kwargs[:num],
-          reverse: !kwargs[:reverse].nil?,
-          include_start_trx: kwargs[:include_start_trx].presence || true,
+          num: kwargs[:num] || 100,
           senders: kwargs[:senders].presence || [],
           trx_types: kwargs[:trx_types].presence || []
+        }.compact
+        params[:reverse] =
+          if kwargs[:reverse]
+            'true'
+          else
+            'false'
+          end
+        params[:include_start_trx] =
+          if kwargs[:include_start_trx]
+            'true'
+          else
+            'false'
+          end
+
+        encrypted_params = QuorumSdk::Utils.aes_encrypt({
+          Req: params
         }.to_json, key: cipher_key)
 
         payload = {
-          Req: Base64.strict_encode64(params)
+          Req: Base64.strict_encode64(encrypted_params)
         }
 
         path = "api/v1/node/groupctn/#{group_id}"
+        list = client.post(path, **payload).body
+
+        return list unless list.is_a?(Array)
+
+        list.each do |trx|
+          data = Base64.strict_decode64 trx['Data']
+          trx['Data'] = QuorumSdk::Utils.decrypt_trx_data data, key: cipher_key
+        end
+
+        list
+      end
+
+      def chain_data(params, type)
+        path = "api/v1/node/getchaindata/#{group_id}"
+        encrypted_params = QuorumSdk::Utils.aes_encrypt params.to_json, key: cipher_key
+        encoded_params = Base64.strict_encode64 encrypted_params
+
+        payload = {
+          Req: encoded_params,
+          ReqType: type
+        }
+
         client.post(path, **payload).body
       end
 
-      def chain_data
-        # TODO: get chain data
-        path = "api/v1/node/getchaindata/#{group_id}"
-        client.post(path).body
+      def group_info
+        chain_data({ GroupId: group_id }, 'group_info')
+      end
+
+      def auth_type(trx_type)
+        chain_data({ GroupId: group_id, TrxType: trx_type }, 'auth_type')
       end
     end
   end

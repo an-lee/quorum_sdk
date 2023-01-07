@@ -85,25 +85,28 @@ module QuorumSdk
         trx_json = JSON.parse aes_decrypt(cipher, key:)
         trx_bytes = Base64.strict_decode64 trx_json['TrxBytes']
         trx = Quorum::Pb::Trx.decode trx_bytes
-        public_key_compressed = Base64.urlsafe_decode64(trx.SenderPubkey).unpack1('H*')
-        signature = trx.SenderSign.unpack1('H*')
 
         trx_without_sig = trx.dup
         trx_without_sig.clear_SenderSign
         hash = Digest::SHA256.hexdigest Quorum::Pb::Trx.encode(trx_without_sig)
 
+        signature = trx.SenderSign.unpack1('H*')
+        public_key_compressed = Base64.urlsafe_decode64(trx.SenderPubkey).unpack1('H*')
         public_key_uncompressed = Eth::Signature.recover [hash].pack('H*'), signature
-
         raise QuorumSdk::Error, 'Signature not verified' if public_key_uncompressed[2...66] != public_key_compressed[2...]
 
-        decrypted_data = aes_decrypt(trx.Data, key:)
-        obj = Google::Protobuf::Any.decode decrypted_data
-        msgclass = ::Google::Protobuf::DescriptorPool.generated_pool.lookup(obj.type_url.split('/').last).msgclass
-        data = msgclass.decode obj.value
+        data = decrypt_trx_data(trx.Data, key:)
 
         trx = JSON.parse Quorum::Pb::Trx.encode_json(trx)
-        trx['Data'] = JSON.parse(msgclass.encode_json(data))
+        trx['Data'] = data
         trx.with_indifferent_access
+      end
+
+      def decrypt_trx_data(cipher, key:)
+        decrypted_data = aes_decrypt(cipher, key:)
+        obj = Google::Protobuf::Any.decode decrypted_data
+        msgclass = ::Google::Protobuf::DescriptorPool.generated_pool.lookup(obj.type_url.split('/').last).msgclass
+        JSON.parse msgclass.encode_json(msgclass.decode(obj.value))
       end
 
       def aes_encrypt(data, key:)

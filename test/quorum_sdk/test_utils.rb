@@ -55,12 +55,15 @@ module QuorumSdk
       type = 'Note'
       name = 'Note Title'
       content = 'Note body'
-      data =
-        Quorum::Pb::Object.new(
-          type:,
-          name:,
-          content:
-        )
+      article = Quorum::Pb::Object.new(
+        type:,
+        name:,
+        content:
+      )
+      data = Quorum::Pb::Activity.new(
+        type: 'Create',
+        object: article
+      )
 
       trx_item = QuorumSdk::Utils.encrypt_trx(
         data:,
@@ -74,9 +77,10 @@ module QuorumSdk
         key: seed[:cipher_key]
       )
 
-      assert_equal type, trx['Data']['type']
-      assert_equal name, trx['Data']['name']
-      assert_equal content, trx['Data']['content']
+      assert_equal 'Create', trx['Data']['type']
+      assert_equal type, trx['Data']['object']['type']
+      assert_equal name, trx['Data']['object']['name']
+      assert_equal content, trx['Data']['object']['content']
     end
 
     def test_decrypt_outside_trx
