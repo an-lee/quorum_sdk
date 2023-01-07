@@ -4,9 +4,9 @@ module QuorumSdk
   class API
     # Wrapper for HTTP APIs for light node
     module LightNode
-      ARGUMENTS_FOR_ENCRYPT_TRX = %i[private_key data].freeze
+      ARGUMENTS_FOR_BUILD_TRX = %i[private_key data].freeze
       def build_trx(**kwargs)
-        raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_ENCRYPT_TRX} must be provided" unless ARGUMENTS_FOR_ENCRYPT_TRX.all?(&->(arg) { arg.in? kwargs.keys })
+        raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_BUILD_TRX} must be provided" unless ARGUMENTS_FOR_BUILD_TRX.all?(&->(arg) { arg.in? kwargs.keys })
         raise ArgumentError, 'data should be instance of Google::Protobuf::MessageExts' unless kwargs[:data].is_a?(Google::Protobuf::MessageExts)
 
         kwargs = kwargs.merge(
