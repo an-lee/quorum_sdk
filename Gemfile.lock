@@ -2,14 +2,13 @@ PATH
   remote: .
   specs:
     quorum_sdk (0.1.0)
-      activesupport (>= 5)
+      activesupport (~> 7)
       addressable (~> 2)
       bcrypt (~> 3.1)
       eth (~> 0.5)
-      faraday (>= 2)
-      faraday-retry (>= 2)
+      faraday (~> 2)
+      faraday-retry (~> 2)
       google-protobuf (~> 3)
-      sha3 (~> 1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -79,7 +78,6 @@ GEM
     rubyzip (2.3.2)
     scrypt (3.0.7)
       ffi-compiler (>= 1.0, < 2.0)
-    sha3 (1.0.5)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.4.2)
