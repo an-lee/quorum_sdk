@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'api/chain'
+require_relative 'api/group'
 require_relative 'api/light_node'
 require_relative 'client'
 
@@ -32,6 +33,7 @@ module QuorumSdk
     end
 
     include QuorumSdk::API::Chain
+    include QuorumSdk::API::Group
     include QuorumSdk::API::LightNode
   end
 end

@@ -6,7 +6,7 @@ module QuorumSdk
     module Chain
       def trx(trx_id)
         path = "api/v1/trx/#{group_id}/#{trx_id}"
-        client.get path
+        client.get(path).body
       end
     end
   end

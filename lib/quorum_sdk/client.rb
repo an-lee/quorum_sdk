@@ -21,7 +21,7 @@ module QuorumSdk
     end
 
     def get(path, **params)
-      @conn.post path, **params
+      @conn.get path, **params
     end
   end
 end

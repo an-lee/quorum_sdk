@@ -6,7 +6,13 @@ module QuorumSdk
   class API
     class TestChain < Minitest::Test
       def setup
-        @api = QuorumSdk::API.new(seed_url: HTTP_SEED_URL['seed_url']) if HTTP_SEED_URL.present?
+        seed = QuorumSdk::Utils.parse_seed_url(HTTP_SEED_URL['seed_url']) if HTTP_SEED_URL.present?
+        return if seed.blank?
+
+        @api = QuorumSdk::API.new(
+          group_id: seed[:group_id],
+          chain_urls: seed[:chain_urls]
+        )
       end
 
       def test_get_trx
@@ -15,7 +21,7 @@ module QuorumSdk
           return
         end
 
-        trx_id = '187b74f4-6a2c-4d7a-ac8d-29f41b90e798'
+        trx_id = 'f554400c-06ac-43f0-a8a6-26e5391f044d'
         r = @api.trx trx_id
         refute_nil r
       end
