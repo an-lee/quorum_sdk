@@ -11,15 +11,14 @@ module QuorumSdk
 
       def test_send_trx
         key = Eth::Key.new
-        object = {
+        data = Quorum::Pb::Object.new(
           type: 'Note',
           name: 'name',
           content: 'content'
-        }
-        data = QuorumSdk::Utils.encode_object(**object)
+        )
         trx = @api.build_trx(data:, private_key: key.private_hex)
         r = @api.send_trx trx
-        refute_nil r
+        refute_nil r['trx_id']
       end
 
       def test_list_trx

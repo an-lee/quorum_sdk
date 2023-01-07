@@ -45,80 +45,65 @@ module QuorumSdk
         )
       end
 
-      def encode_object(**kwargs)
-        msg = Quorum::Pb::Object.new(**kwargs)
-        msg.inreplyto = Quorum::Pb::Reply.new(trxid: kwargs[:inreplyto]) if kwargs[:inreplyto].present?
-        # TODO: support image
-
-        Google::Protobuf::Any.new(
-          type_url: "type.googleapis.com/#{msg.class.descriptor.name}",
-          value: msg.to_proto
-        ).to_proto
-      end
-
-      def encrypt_person; end
-
+      ARGUMENTS_FOR_ENCRYPT_TRX = %i[private_key group_id cipher_key data].freeze
       def encrypt_trx(**kwargs)
+        raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_ENCRYPT_TRX} must be provided" unless ARGUMENTS_FOR_ENCRYPT_TRX.all?(&->(arg) { arg.in? kwargs.keys })
+        raise ArgumentError, 'data should be instance of Google::Protobuf::MessageExts' unless kwargs[:data].is_a?(Google::Protobuf::MessageExts)
+
+        data = Google::Protobuf::Any.new(
+          type_url: "type.googleapis.com/#{kwargs[:data].class.descriptor.name}",
+          value: kwargs[:data].to_proto
+        ).to_proto
+        encrypted_data = aes_encrypt data, key: kwargs[:cipher_key]
+
         key = Eth::Key.new priv: kwargs[:private_key]
+
         msg =
           Quorum::Pb::Trx.new(
-            TrxId: kwargs[:trx_id] || SecureRandom.uuid,
+            TrxId: (kwargs[:trx_id] || SecureRandom.uuid),
             GroupId: kwargs[:group_id],
-            Data: aes_encrypt(kwargs[:data], key: kwargs[:cipher_key]),
-            TimeStamp: kwargs[:timestamp] || (Time.now.to_f * 1e9).to_i,
-            Version: kwargs[:version] || '1.0.0',
-            Expired: kwargs[:expired] || (30.seconds.from_now.to_f * 1e9).to_i,
-            Nonce: kwargs[:nonce] || 1,
-            SenderPubkey: Base64.urlsafe_encode64(key.public_bytes_compressed)
+            Data: encrypted_data,
+            TimeStamp: (kwargs[:timestamp].to_i || (Time.now.to_f * 1e9).to_i),
+            Version: (kwargs[:version] || '1.0.0'),
+            Expired: (kwargs[:expired].to_i || (30.seconds.from_now.to_f * 1e9).to_i),
+            Nonce: (kwargs[:nonce] || 1),
+            SenderPubkey: Base64.urlsafe_encode64(key.public_bytes_compressed, padding: false)
           )
 
-        hash = Digest::SHA256.hexdigest Quorum::Pb::Trx.encode(msg)
+        hash = Digest::SHA256.hexdigest msg.to_proto
         signature = key.sign [hash].pack('H*')
         msg.SenderSign = [signature].pack('H*')
         trx_json = {
-          TrxBytes: Base64.strict_encode64(Quorum::Pb::Trx.encode(msg))
+          TrxBytes: Base64.strict_encode64(msg.to_proto)
         }
         encrypted = aes_encrypt trx_json.to_json, key: kwargs[:cipher_key]
-        Base64.strict_encode64(encrypted)
+        Base64.strict_encode64 encrypted
       end
 
-      def decrypt_trx(cipher, **kwargs)
+      def decrypt_trx(cipher, key:)
         cipher = Base64.strict_decode64 cipher
-        trx_json = JSON.parse aes_decrypt(cipher, key: kwargs[:cipher_key])
+        trx_json = JSON.parse aes_decrypt(cipher, key:)
         trx_bytes = Base64.strict_decode64 trx_json['TrxBytes']
         trx = Quorum::Pb::Trx.decode trx_bytes
         public_key_compressed = Base64.urlsafe_decode64(trx.SenderPubkey).unpack1('H*')
         signature = trx.SenderSign.unpack1('H*')
 
-        trx_without_sig =
-          Quorum::Pb::Trx.new(
-            TrxId: trx.TrxId,
-            GroupId: trx.GroupId,
-            Data: trx.Data,
-            TimeStamp: trx.TimeStamp,
-            Version: trx.Version,
-            Expired: trx.Expired,
-            Nonce: trx.Nonce,
-            SenderPubkey: trx.SenderPubkey
-          )
+        trx_without_sig = trx.dup
+        trx_without_sig.clear_SenderSign
         hash = Digest::SHA256.hexdigest Quorum::Pb::Trx.encode(trx_without_sig)
 
         public_key_uncompressed = Eth::Signature.recover [hash].pack('H*'), signature
 
-        raise QuorumSdk::Error, 'Signature not verify' if public_key_uncompressed[2...66] != public_key_compressed[2...]
+        raise QuorumSdk::Error, 'Signature not verified' if public_key_uncompressed[2...66] != public_key_compressed[2...]
 
-        decrypted_data = aes_decrypt trx.Data, key: kwargs[:cipher_key]
+        decrypted_data = aes_decrypt(trx.Data, key:)
         obj = Google::Protobuf::Any.decode decrypted_data
-        data =
-          case obj.type_url.split('/').last.split('.').last
-          when 'Object'
-            Quorum::Pb::Object.decode obj.value
-          end
+        msgclass = ::Google::Protobuf::DescriptorPool.generated_pool.lookup(obj.type_url.split('/').last).msgclass
+        data = msgclass.decode obj.value
 
-        {
-          trx:,
-          data:
-        }
+        trx = JSON.parse Quorum::Pb::Trx.encode_json(trx)
+        trx['Data'] = JSON.parse(msgclass.encode_json(data))
+        trx.with_indifferent_access
       end
 
       def aes_encrypt(data, key:)

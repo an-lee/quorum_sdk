@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = 'A API wrapper for Quorum'
   spec.homepage = 'https://github.com/an-lee/quorum_sdk'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.2.0'
+  spec.required_ruby_version = '>= 3.1'
 
   spec.metadata['allowed_push_host'] = ''
 
