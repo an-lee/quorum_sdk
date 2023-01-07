@@ -49,8 +49,8 @@ module QuorumSdk
 
     def test_decrypt_encrypted_trx
       seed = QuorumSdk::Utils.parse_seed_url SEED_URL
-      key = Eth::Key.new
-      private_key = key.private_hex
+      account = QuorumSdk::Account.new
+      private_key = account.private_hex
 
       type = 'Note'
       name = 'Note Title'

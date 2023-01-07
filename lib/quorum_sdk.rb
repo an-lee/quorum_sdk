@@ -9,11 +9,12 @@ require 'faraday'
 require 'faraday/retry'
 require 'google/protobuf/well_known_types'
 
-require_relative 'quorum_sdk/version'
-require_relative 'quorum_sdk/api'
-require_relative 'quorum_sdk/utils'
 require_relative 'proto/activity_stream_pb'
 require_relative 'proto/chain_pb'
+require_relative 'quorum_sdk/account'
+require_relative 'quorum_sdk/api'
+require_relative 'quorum_sdk/utils'
+require_relative 'quorum_sdk/version'
 
 module QuorumSdk
   class Error < StandardError; end

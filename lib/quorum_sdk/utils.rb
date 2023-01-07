@@ -56,7 +56,7 @@ module QuorumSdk
         ).to_proto
         encrypted_data = aes_encrypt data, key: kwargs[:cipher_key]
 
-        key = Eth::Key.new priv: kwargs[:private_key]
+        account = QuorumSdk::Account.new priv: kwargs[:private_key]
 
         msg =
           Quorum::Pb::Trx.new(
@@ -67,11 +67,11 @@ module QuorumSdk
             Version: (kwargs[:version] || '1.0.0'),
             Expired: (kwargs[:expired].to_i || (30.seconds.from_now.to_f * 1e9).to_i),
             Nonce: (kwargs[:nonce] || 1),
-            SenderPubkey: Base64.urlsafe_encode64(key.public_bytes_compressed, padding: false)
+            SenderPubkey: Base64.urlsafe_encode64(account.public_bytes_compressed, padding: false)
           )
 
         hash = Digest::SHA256.hexdigest msg.to_proto
-        signature = key.sign [hash].pack('H*')
+        signature = account.sign [hash].pack('H*')
         msg.SenderSign = [signature].pack('H*')
         trx_json = {
           TrxBytes: Base64.strict_encode64(msg.to_proto)
