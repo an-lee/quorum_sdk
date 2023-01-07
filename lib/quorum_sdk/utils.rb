@@ -106,7 +106,8 @@ module QuorumSdk
         decrypted_data = aes_decrypt(cipher, key:)
         obj = Google::Protobuf::Any.decode decrypted_data
         msgclass = ::Google::Protobuf::DescriptorPool.generated_pool.lookup(obj.type_url.split('/').last).msgclass
-        JSON.parse msgclass.encode_json(msgclass.decode(obj.value))
+        json = JSON.parse msgclass.encode_json(msgclass.decode(obj.value))
+        json.with_indifferent_access
       end
 
       def aes_encrypt(data, key:)
