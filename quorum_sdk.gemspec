@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 3.1'
 
-  spec.metadata['allowed_push_host'] = ''
+  # spec.metadata['allowed_push_host'] = ''
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/an-lee/quorum_sdk'
@@ -32,12 +32,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   # Uncomment to register a new dependency of your gem
-  spec.add_dependency 'activesupport', '>= 5'
+  spec.add_dependency 'activesupport', '~> 7'
   spec.add_dependency 'addressable', '~> 2'
   spec.add_dependency 'bcrypt', '~> 3.1'
   spec.add_dependency 'eth', '~> 0.5'
-  spec.add_dependency 'faraday', '>= 2'
-  spec.add_dependency 'faraday-retry', '>= 2'
+  spec.add_dependency 'faraday', '~> 2'
+  spec.add_dependency 'faraday-retry', '~> 2'
   spec.add_dependency 'google-protobuf', '~> 3'
   spec.add_dependency 'sha3', '~> 1.0'
 
