@@ -7,7 +7,7 @@ module QuorumSdk
     # These tests depend on RUM server config in /config.json
     class TestLightNode < Minitest::Test
       def setup
-        @api = QuorumSdk::API.new(HTTP_SEED_URL['seed_url']) if HTTP_SEED_URL.present?
+        @api = QuorumSdk::API.new(seed_url: HTTP_SEED_URL['seed_url']) if HTTP_SEED_URL.present?
       end
 
       def test_send_trx
