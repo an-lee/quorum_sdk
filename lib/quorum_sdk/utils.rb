@@ -91,9 +91,9 @@ module QuorumSdk
         hash = Digest::SHA256.hexdigest Quorum::Pb::Trx.encode(trx_without_sig)
 
         signature = trx.SenderSign.unpack1('H*')
-        public_key_compressed = Base64.urlsafe_decode64(trx.SenderPubkey).unpack1('H*')
-        public_key_uncompressed = Eth::Signature.recover [hash].pack('H*'), signature
-        raise QuorumSdk::Error, 'Signature not verified' if public_key_uncompressed[2...66] != public_key_compressed[2...]
+        public_key = Secp256k1::PublicKey.from_data(Base64.urlsafe_decode64(trx.SenderPubkey)).uncompressed.unpack1('H*')
+        recover_key = Eth::Signature.recover [hash].pack('H*'), signature
+        raise QuorumSdk::Error, "Signature not verified: #{public_key} != #{recover_key}" unless public_key == recover_key
 
         data = decrypt_trx_data(trx.Data, key:)
 
