@@ -26,8 +26,7 @@ module QuorumSdk
           group_id:,
           start_trx: kwargs[:start_trx],
           num: kwargs[:num] || 100,
-          senders: kwargs[:senders].presence || [],
-          trx_types: kwargs[:trx_types].presence || []
+          senders: kwargs[:senders].presence || []
         }.compact
         params[:reverse] =
           if kwargs[:reverse]

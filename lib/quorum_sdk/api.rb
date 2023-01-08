@@ -3,6 +3,7 @@
 require_relative 'api/chain'
 require_relative 'api/group'
 require_relative 'api/light_node'
+require_relative 'api/management'
 require_relative 'client'
 
 module QuorumSdk
@@ -35,5 +36,6 @@ module QuorumSdk
     include QuorumSdk::API::Chain
     include QuorumSdk::API::Group
     include QuorumSdk::API::LightNode
+    include QuorumSdk::API::Management
   end
 end
