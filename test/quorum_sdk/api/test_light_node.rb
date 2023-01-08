@@ -17,14 +17,16 @@ module QuorumSdk
         end
 
         account = QuorumSdk::Account.new
+        id = SecureRandom.uuid
         data = Quorum::Pb::Object.new(
           type: 'Note',
-          name: 'name',
-          content: 'content'
+          id:,
+          name: "A random name #{id}",
+          content: "A random content #{id}"
         )
-        trx = @api.build_trx(data:, private_key: account.private_hex)
+        trx = @api.build_trx(trx_id: id, data:, private_key: account.private_hex)
         r = @api.send_trx trx
-        refute_nil r['trx_id']
+        assert_equal id, r['trx_id']
       end
 
       def test_list_trx
@@ -65,17 +67,6 @@ module QuorumSdk
         end
 
         r = @api.group_info
-        refute_nil r
-      end
-
-      def test_chain_data_auth_type
-        if @api.blank?
-          puts '**Warning**setup a RUM server for HTTP API test'
-          return
-        end
-
-        r = @api.auth_type('Post')
-        puts r
         refute_nil r
       end
     end

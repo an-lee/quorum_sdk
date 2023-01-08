@@ -78,10 +78,6 @@ module QuorumSdk
       def group_info
         chain_data({ GroupId: group_id }, 'group_info')
       end
-
-      def auth_type(trx_type)
-        chain_data({ GroupId: group_id, TrxType: trx_type }, 'auth_type')
-      end
     end
   end
 end

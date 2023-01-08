@@ -51,7 +51,7 @@ module QuorumSdk
           return
         end
 
-        r = @api.update_trx_auth_mode(trx_auth_mode: 'follow_alw_list')
+        r = @api.update_trx_auth_mode(trx_auth_mode: 'follow_dny_list')
         refute_nil r['trx_id']
       end
 
