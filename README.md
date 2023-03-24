@@ -31,7 +31,11 @@ rum = QuorumSdk::API.new(
 
 ```ruby
 # build a message
-msg = Quorum::Pb::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
+msg = {
+  type: 'Note',
+  name: 'A title',
+  content: 'Something awesome'
+}
 
 # prepare an ETH account
 account = QuorumSdk::Account.new
@@ -52,10 +56,14 @@ Build a activity message
 
 ```ruby
 # build a Note type object
-note = Quorum::Pb::Object.new(type: 'Note', name: 'A title', content: 'Something awesome.')
+note = {
+  type: 'Note',
+  name: 'A title',
+  content: 'Something awesome.'
+}
 
 # build Activity object, wrapping Note object
-activity = Quorum::Pb::Activity.new(type: 'Create', object: note)
+activity = { type: 'Create', object: note }
 
 # build Trx
 trx = rum.build_trx data: activity, private_key: account.private_hex

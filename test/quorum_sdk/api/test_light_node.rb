@@ -18,12 +18,12 @@ module QuorumSdk
 
         account = QuorumSdk::Account.new
         id = SecureRandom.uuid
-        data = Quorum::Pb::Object.new(
+        data = {
           type: 'Note',
           id:,
           name: "A random name #{id}",
           content: "A random content #{id}"
-        )
+        }
         trx = @api.build_trx(trx_id: id, data:, private_key: account.private_hex)
         r = @api.send_trx trx
         assert_equal id, r['trx_id']
@@ -46,15 +46,15 @@ module QuorumSdk
         end
 
         account = QuorumSdk::Account.new
-        article = Quorum::Pb::Object.new(
+        article = {
           type: 'Article',
           name: 'title',
           content: 'article content'
-        )
-        activity = Quorum::Pb::Activity.new(
+        }
+        activity = {
           type: 'Create',
           object: article
-        )
+        }
         trx = @api.build_trx(data: activity, private_key: account.private_hex)
         r = @api.send_trx trx
         refute_nil r['trx_id']

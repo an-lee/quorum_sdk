@@ -17,6 +17,8 @@ require_relative 'quorum_sdk/utils'
 require_relative 'quorum_sdk/version'
 
 module QuorumSdk
+  TRX_VERSION = '2.0.0'
+
   class Error < StandardError; end
   class ArgumentError < Error; end
 end

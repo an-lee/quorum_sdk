@@ -34,6 +34,7 @@ module QuorumSdk
       end
 
       def uuid_from_base64(str)
+        return if str.blank?
         hex = Base64.urlsafe_decode64(str).unpack1('H*')
         format(
           '%<first>s-%<second>s-%<third>s-%<forth>s-%<fifth>s',
@@ -48,12 +49,14 @@ module QuorumSdk
       ARGUMENTS_FOR_ENCRYPT_TRX = %i[private_key group_id cipher_key data].freeze
       def encrypt_trx(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_ENCRYPT_TRX} must be provided" unless ARGUMENTS_FOR_ENCRYPT_TRX.all?(&->(arg) { arg.in? kwargs.keys })
-        raise ArgumentError, 'data should be instance of Google::Protobuf::MessageExts' unless kwargs[:data].is_a?(Google::Protobuf::MessageExts)
 
-        data = Google::Protobuf::Any.new(
-          type_url: "type.googleapis.com/#{kwargs[:data].class.descriptor.name}",
-          value: kwargs[:data].to_proto
-        ).to_proto
+        data =
+          case kwargs[:data]
+          when Hash
+            kwargs[:data].to_json
+          else
+            kwargs[:data].to_s
+          end
         encrypted_data = aes_encrypt data, key: kwargs[:cipher_key]
 
         account = QuorumSdk::Account.new priv: kwargs[:private_key]
@@ -64,9 +67,8 @@ module QuorumSdk
             GroupId: kwargs[:group_id],
             Data: encrypted_data,
             TimeStamp: (kwargs[:timestamp].to_i || (Time.now.to_f * 1e9).to_i),
-            Version: (kwargs[:version] || '1.0.0'),
+            Version: (kwargs[:version] || TRX_VERSION),
             Expired: (kwargs[:expired].to_i || (30.seconds.from_now.to_f * 1e9).to_i),
-            Nonce: (kwargs[:nonce] || 1),
             SenderPubkey: Base64.urlsafe_encode64(account.public_bytes_compressed, padding: false)
           )
 
@@ -104,10 +106,11 @@ module QuorumSdk
 
       def decrypt_trx_data(cipher, key:)
         decrypted_data = aes_decrypt(cipher, key:)
-        obj = Google::Protobuf::Any.decode decrypted_data
-        msgclass = ::Google::Protobuf::DescriptorPool.generated_pool.lookup(obj.type_url.split('/').last).msgclass
-        json = JSON.parse msgclass.encode_json(msgclass.decode(obj.value))
-        json.with_indifferent_access
+        begin
+          JSON.parse(decrypted_data).with_indifferent_access
+        rescue JSON::ParserError
+          decrypted_data
+        end
       end
 
       def aes_encrypt(data, key:)

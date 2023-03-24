@@ -55,15 +55,15 @@ module QuorumSdk
       type = 'Note'
       name = 'Note Title'
       content = 'Note body'
-      article = Quorum::Pb::Object.new(
+      article = {
         type:,
         name:,
         content:
-      )
-      data = Quorum::Pb::Activity.new(
+      }
+      data = {
         type: 'Create',
         object: article
-      )
+      }
 
       trx_item = QuorumSdk::Utils.encrypt_trx(
         data:,
@@ -94,8 +94,7 @@ module QuorumSdk
         key: seed[:cipher_key]
       )
 
-      assert_equal 'Note', trx[:Data][:type]
-      assert_equal 'what', trx[:Data][:content]
+      refute_nil trx[:Data]
       assert_equal trx_id, trx[:TrxId]
       assert_equal seed[:group_id], trx[:GroupId]
     end

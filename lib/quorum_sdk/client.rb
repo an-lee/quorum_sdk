@@ -9,7 +9,11 @@ module QuorumSdk
 
     def initialize(domains)
       @domains = domains || []
-      @conn = Faraday.new(url: @domains.first) do |f|
+      uri = Addressable::URI.parse @domains.first
+      url = Addressable::URI.new(scheme: uri.scheme, host: uri.host, port: uri.port).to_s
+      jwt = uri.query_values['jwt']
+
+      @conn = Faraday.new(url:, headers: { Authorization: "Bearer #{jwt}" }) do |f|
         f.request :json
         f.response :json
         f.response :logger

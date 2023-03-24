@@ -7,7 +7,6 @@ module QuorumSdk
       ARGUMENTS_FOR_BUILD_TRX = %i[private_key data].freeze
       def build_trx(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_BUILD_TRX} must be provided" unless ARGUMENTS_FOR_BUILD_TRX.all?(&->(arg) { arg.in? kwargs.keys })
-        raise ArgumentError, 'data should be instance of Google::Protobuf::MessageExts' unless kwargs[:data].is_a?(Google::Protobuf::MessageExts)
 
         kwargs = kwargs.merge(
           group_id:,
@@ -55,6 +54,8 @@ module QuorumSdk
         return list unless list.is_a?(Array)
 
         list.each do |trx|
+          next if trx['Data'].blank?
+
           data = Base64.strict_decode64 trx['Data']
           trx['Data'] = QuorumSdk::Utils.decrypt_trx_data data, key: cipher_key
         end
