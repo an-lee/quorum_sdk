@@ -35,6 +35,7 @@ module QuorumSdk
 
       def uuid_from_base64(str)
         return if str.blank?
+
         hex = Base64.urlsafe_decode64(str).unpack1('H*')
         format(
           '%<first>s-%<second>s-%<third>s-%<forth>s-%<fifth>s',
