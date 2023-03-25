@@ -23,7 +23,7 @@ rum = QuorumSdk::API.new(
     gropu_id: '',
     gropu_name: '',
     cipher_key: '',
-    chain_urls: ['', '']
+    chain_url: ''
 )
 ```
 

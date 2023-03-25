@@ -34,6 +34,12 @@ module QuorumSdk
         path = "api/v1/group/#{group_id}/seed"
         client.get(path).body
       end
+
+      def join_group(seed)
+        path = 'api/v2/group/join'
+        payload = { seed: }
+        client.post(path, **payload).body
+      end
     end
   end
 end

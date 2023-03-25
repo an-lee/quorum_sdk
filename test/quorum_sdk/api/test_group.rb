@@ -11,7 +11,7 @@ module QuorumSdk
 
         @api = QuorumSdk::API.new(
           group_id: seed[:group_id],
-          chain_urls: seed[:chain_urls]
+          chain_url: seed[:chain_url]
         )
       end
 

@@ -7,17 +7,28 @@ module QuorumSdk
   class Client
     attr_reader :domains
 
-    def initialize(domains)
-      @domains = domains || []
-      uri = Addressable::URI.parse @domains.first
-      url = Addressable::URI.new(scheme: uri.scheme, host: uri.host, port: uri.port).to_s
-      jwt = uri.query_values['jwt']
+    def initialize(chain_url, jwt = nil)
+      chain_url =
+        case chain_url
+        when Array
+          chain_url.first
+        when String
+          chain_url
+        end
 
-      @conn = Faraday.new(url:, headers: { Authorization: "Bearer #{jwt}" }) do |f|
-        f.request :json
-        f.response :json
-        f.response :logger
-      end
+      uri = Addressable::URI.parse chain_url
+      url = Addressable::URI.new(scheme: uri.scheme, host: uri.host, port: uri.port).to_s
+      jwt ||= uri.query_values['jwt']
+
+      @conn =
+        Faraday.new(
+          url:,
+          headers: { Authorization: "Bearer #{jwt}" }
+        ) do |f|
+          f.request :json
+          f.response :json
+          f.response :logger
+        end
     end
 
     def post(path, **body)
