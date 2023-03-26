@@ -4,8 +4,8 @@ require 'test_helper'
 
 module QuorumSdk
   class TestAPI < Minitest::Test
-    def test_api_may_initialize_by_seed_url
-      refute_nil QuorumSdk::API.new seed_url: SEED_URL
+    def test_api_may_initialize_by_seed
+      refute_nil QuorumSdk::API.new seed: SEED
     end
 
     def test_api_may_initialize_by_config

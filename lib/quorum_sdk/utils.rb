@@ -4,7 +4,7 @@ module QuorumSdk
   # Wrapper for some useful methods
   module Utils
     class << self
-      def parse_seed_url(url)
+      def parse_seed(url)
         url = Addressable::URI.parse(url.gsub(/\\u([a-f0-9]{4})/i) { [::Regexp.last_match(1).hex].pack('U') })
         query_values = url.query_values
 

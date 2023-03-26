@@ -14,8 +14,8 @@ module QuorumSdk
 
     def initialize(**kwargs)
       config =
-        if kwargs[:seed_url].present?
-          QuorumSdk::Utils.parse_seed_url kwargs[:seed_url]
+        if kwargs[:seed].present?
+          QuorumSdk::Utils.parse_seed kwargs[:seed]
         else
           kwargs
         end

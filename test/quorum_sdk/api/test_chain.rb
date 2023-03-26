@@ -6,7 +6,7 @@ module QuorumSdk
   class API
     class TestChain < Minitest::Test
       def setup
-        seed = QuorumSdk::Utils.parse_seed_url(HTTP_SEED_URL['seed_url']) if HTTP_SEED_URL.present?
+        seed = QuorumSdk::Utils.parse_seed(HTTP_SEED['seed']) if HTTP_SEED.present?
         return if seed.blank?
 
         @api = QuorumSdk::API.new(

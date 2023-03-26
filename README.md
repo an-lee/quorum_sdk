@@ -16,7 +16,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ```ruby
 # Initilize by seed url
-rum = QuorumSdk::API.new seed_url: "rum://...."
+rum = QuorumSdk::API.new seed: "rum://...."
 
 # Initilize by config
 rum = QuorumSdk::API.new(
