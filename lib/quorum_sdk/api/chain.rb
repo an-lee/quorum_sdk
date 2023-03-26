@@ -4,7 +4,10 @@ module QuorumSdk
   class API
     # Wrapper for HTTP APIs for chain
     module Chain
-      def trx(trx_id)
+      def trx(trx_id, group_id = nil)
+        group_id ||= @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
         path = "api/v1/trx/#{group_id}/#{trx_id}"
         r = client.get(path).body
         r =

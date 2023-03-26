@@ -10,7 +10,7 @@ module QuorumSdk
   # Wrapper for HTTP APIs
   class API
     attr_reader :group_id, :group_name, :consensus_type, :encryption_type, :app_key, :owner_pubkey, :signature,
-                :cipher_key, :chain_url, :client
+                :cipher_key, :chain_url, :jwt, :client
 
     def initialize(**kwargs)
       config =

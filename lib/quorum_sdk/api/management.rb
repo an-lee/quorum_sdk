@@ -6,18 +6,24 @@ module QuorumSdk
     module Management
       def allow_list(group_id: nil)
         group_id ||= @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
         path = "api/v1/group/#{group_id}/trx/allowlist"
         client.get(path).body
       end
 
       def deny_list(group_id: nil)
         group_id ||= @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
         path = "api/v1/group/#{group_id}/trx/denylist"
         client.get(path).body
       end
 
       def auth_type(trx_type, group_id: nil)
         group_id ||= @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
         path = "api/v1/group/#{group_id}/trx/auth/#{trx_type}"
         client.get(path).body
       end
@@ -55,8 +61,11 @@ module QuorumSdk
         trx_auth_mode = kwargs[:trx_auth_mode]
         raise ArgumentError, 'trx_auth_mode must be one of follow_alw_list/follow_dny_list' unless trx_auth_mode.in? %w[follow_alw_list follow_dny_list]
 
+        group_id = kwargs[:group_id] || @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
         update_chain_config(
-          group_id: kwargs[:group_id],
+          group_id:,
           type: 'set_trx_auth_mode',
           config: {
             trx_type:,
@@ -83,8 +92,11 @@ module QuorumSdk
           pubkey = Base64.urlsafe_encode64(pubkey)
         end
 
+        group_id = kwargs[:group_id] || @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
         update_chain_config(
-          group_id: kwargs[:group_id],
+          group_id:,
           type: 'upd_alw_list',
           config: {
             trx_type:,
@@ -112,8 +124,11 @@ module QuorumSdk
           pubkey = Base64.urlsafe_encode64(pubkey)
         end
 
+        group_id = kwargs[:group_id] || @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
         update_chain_config(
-          group_id: kwargs[:group_id],
+          group_id:,
           type: 'upd_dny_list',
           config: {
             trx_type:,

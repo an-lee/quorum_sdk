@@ -50,6 +50,7 @@ module QuorumSdk
 
         path = "api/v1/node/groupctn/#{group_id}"
         list = client.post(path, **payload).body
+        puts list
 
         return list unless list.is_a?(Array)
 
