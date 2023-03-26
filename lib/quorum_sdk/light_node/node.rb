@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module QuorumSdk
-  class API
-    # Wrapper for HTTP APIs for light node
-    module LightNode
+  class LightNode
+    # Wrapper for HTTP APIs as light node client
+    module Node
       ARGUMENTS_FOR_BUILD_TRX = %i[private_key data].freeze
       def build_trx(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_BUILD_TRX} must be provided" unless ARGUMENTS_FOR_BUILD_TRX.all?(&->(arg) { arg.in? kwargs.keys })

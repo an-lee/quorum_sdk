@@ -10,21 +10,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install quorum_sdk
 
-## Usage
+## LightNode Usage
 
 ### Initilize
 
 ```ruby
 # Initilize by seed url
-rum = QuorumSdk::API.new seed: "rum://...."
-
-# Initilize by config
-rum = QuorumSdk::API.new(
-    gropu_id: '',
-    gropu_name: '',
-    cipher_key: '',
-    chain_url: ''
-)
+node = QuorumSdk::LightNode.new seed: "rum://...."
 ```
 
 ### Send a trx
@@ -44,10 +36,10 @@ account = QuorumSdk::Account.new
 # account = QuorumSdk::Account.new priv: private_key
 
 # build trx
-trx = rum.build_trx data: msg, private_key: account.private_hex
+trx = node.build_trx data: msg, private_key: account.private_hex
 
 # push trx to chain
-rum.send_trx trx
+node.send_trx trx
 # output: { trx_id: '...' }
 
 ```
@@ -69,16 +61,24 @@ activity = { type: 'Create', object: note }
 trx = rum.build_trx data: activity, private_key: account.private_hex
 
 # push trx to chain
-rum.send_trx trx
+node.send_trx trx
 # output: { trx_id: '...' }
 
-# list Trx on chain
-rum.list_trx
+# list Trx in the group on chain
+node.list_trx
 # output: [{ trx_id: '...', Data: { type: 'Create', object: { type: 'Note', name: 'A title', content: 'Something awesome' }}}]
 
 ```
 
-### Proto
+## FullNode Usage
+
+### Initilize
+
+```ruby
+node = QuorumSdk::FullNode.new chain_url: 'http://127.0.0.1:8002', jwt: ''
+```
+
+## Proto
 
 Check all available proto types in [chain_pb.rb](./lib/proto/chain_pb.rb) and [activity_stream_pb.rb](./lib/proto/activity_stream_pb.rb).
 

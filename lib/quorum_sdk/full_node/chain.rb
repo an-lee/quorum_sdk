@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 module QuorumSdk
-  class API
+  class FullNode
     # Wrapper for HTTP APIs for chain
     module Chain
-      def trx(trx_id, group_id = nil)
-        group_id ||= @group_id
+      def trx(trx_id, group_id:)
         raise ArgumentError, 'group_id must be provided' if group_id.blank?
 
         path = "api/v1/trx/#{group_id}/#{trx_id}"
@@ -17,9 +16,11 @@ module QuorumSdk
             r
           end
 
-        if r['Data'].present?
+        group = groups['groups'].find(&->(g) { g['group_id'] == group_id })
+
+        if r['Data'].present? && group.present?
           data = Base64.strict_decode64 r['Data']
-          r['Data'] = QuorumSdk::Utils.decrypt_trx_data data, key: cipher_key
+          r['Data'] = QuorumSdk::Utils.decrypt_trx_data data, key: group['cipher_key']
         end
 
         r

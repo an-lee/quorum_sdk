@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QuorumSdk
-  class API
+  class FullNode
     # Wrapper for HTTP APIs for group
     module Group
       ARGUMENTS_FOR_CREATE_GROUP = %i[app_key group_name].freeze

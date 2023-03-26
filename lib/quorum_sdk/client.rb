@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'api/light_node'
-
 module QuorumSdk
   # HTTP Client wrapper
   class Client

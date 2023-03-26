@@ -3,36 +3,36 @@
 require 'test_helper'
 
 module QuorumSdk
-  class API
+  class FullNode
+    # These tests depend on RUM server config in /config.json
     class TestGroup < Minitest::Test
       def setup
-        seed = QuorumSdk::Utils.parse_seed(HTTP_SEED['seed']) if HTTP_SEED.present?
-        return if seed.blank?
+        return if HTTP_SEED.blank?
 
-        @api = QuorumSdk::API.new(
-          group_id: seed[:group_id],
-          chain_url: seed[:chain_url]
+        @node = QuorumSdk::FullNode.new(
+          chain_url: HTTP_SEED['chain_url'],
+          jwt: HTTP_SEED['jwt']
         )
       end
 
       def test_create_public_group
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
-        r = @api.create_group app_key: 'my_test_app', group_name: "A public group-#{SecureRandom.uuid}"
+        r = @node.create_group app_key: 'my_test_app', group_name: "A public group-#{SecureRandom.uuid}"
         refute_nil r['group_id']
         refute_nil r['seed']
       end
 
       def test_create_private_group
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
-        r = @api.create_group(
+        r = @node.create_group(
           app_key: 'my_test_app',
           group_name: "A private group-#{SecureRandom.uuid}",
           encryption_type: 'private'
@@ -42,23 +42,23 @@ module QuorumSdk
       end
 
       def test_list_groups
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
-        r = @api.groups
+        r = @node.groups
         refute_nil r['groups']
       end
 
       def test_group_seed
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
-        group_id = @api.group_id
-        r = @api.seed group_id
+        group_id = @node.groups['groups'].first['group_id']
+        r = @node.seed group_id
         refute_nil r['seed']
       end
     end

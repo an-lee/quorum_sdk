@@ -3,26 +3,26 @@
 require 'test_helper'
 
 module QuorumSdk
-  class API
+  class FullNode
+    # These tests depend on RUM server config in /config.json
     class TestChain < Minitest::Test
       def setup
-        seed = QuorumSdk::Utils.parse_seed(HTTP_SEED['seed']) if HTTP_SEED.present?
-        return if seed.blank?
+        return if HTTP_SEED.blank?
 
-        @api = QuorumSdk::API.new(
-          group_id: seed[:group_id],
-          chain_url: seed[:chain_url]
+        @node = QuorumSdk::FullNode.new(
+          chain_url: HTTP_SEED['chain_url'],
+          jwt: HTTP_SEED['jwt']
         )
       end
 
       def test_get_trx
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
         trx_id = 'f554400c-06ac-43f0-a8a6-26e5391f044d'
-        r = @api.trx trx_id
+        r = @node.trx trx_id, group_id: ''
         refute_nil r
       end
     end

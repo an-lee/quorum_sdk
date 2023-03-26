@@ -3,15 +3,15 @@
 require 'test_helper'
 
 module QuorumSdk
-  class API
+  class LightNode
     # These tests depend on RUM server config in /config.json
-    class TestLightNode < Minitest::Test
+    class TestNode < Minitest::Test
       def setup
-        @api = QuorumSdk::API.new(seed: HTTP_SEED['seed']) if HTTP_SEED.present?
+        @node = QuorumSdk::LightNode.new(seed: HTTP_SEED['seed']) if HTTP_SEED.present?
       end
 
       def test_send_trx
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
@@ -24,23 +24,23 @@ module QuorumSdk
           name: "A random name #{id}",
           content: "A random content #{id}"
         }
-        trx = @api.build_trx(trx_id: id, data:, private_key: account.private_hex)
-        r = @api.send_trx trx
+        trx = @node.build_trx(trx_id: id, data:, private_key: account.private_hex)
+        r = @node.send_trx trx
         assert_equal id, r['trx_id']
       end
 
       def test_list_trx
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
-        r = @api.list_trx reverse: true
+        r = @node.list_trx reverse: true
         assert_instance_of Array, r
       end
 
       def test_send_activity_type_trx
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
@@ -55,18 +55,18 @@ module QuorumSdk
           type: 'Create',
           object: article
         }
-        trx = @api.build_trx(data: activity, private_key: account.private_hex)
-        r = @api.send_trx trx
+        trx = @node.build_trx(data: activity, private_key: account.private_hex)
+        r = @node.send_trx trx
         refute_nil r['trx_id']
       end
 
       def test_chain_data_group_info
-        if @api.blank?
+        if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
-        r = @api.group_info
+        r = @node.group_info
         refute_nil r
       end
     end
