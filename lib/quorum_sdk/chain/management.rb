@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QuorumSdk
-  class FullNode
+  class Chain
     # Wrapper for HTTP APIs for chain
     module Management
       def allow_list(group_id: nil)

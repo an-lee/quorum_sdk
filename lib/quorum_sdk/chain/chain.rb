@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QuorumSdk
-  class FullNode
+  class Chain
     # Wrapper for HTTP APIs for chain
     module Chain
       def trx(trx_id, group_id:)

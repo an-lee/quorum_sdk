@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module QuorumSdk
-  class LightNode
+  class Node
     # Wrapper for HTTP APIs as light node client
-    module Node
+    module Trx
       ARGUMENTS_FOR_BUILD_TRX = %i[private_key data].freeze
       def build_trx(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_BUILD_TRX} must be provided" unless ARGUMENTS_FOR_BUILD_TRX.all?(&->(arg) { arg.in? kwargs.keys })
@@ -21,38 +21,25 @@ module QuorumSdk
       end
 
       def list_trx(**kwargs)
+        group_id = kwargs[:group_id] || @group_id
+        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+
+        cipher_key = kwargs[:cipher_key] || @cipher_key
+
         params = {
           group_id:,
           start_trx: kwargs[:start_trx],
           num: kwargs[:num] || 100,
-          senders: kwargs[:senders].presence || []
+          senders: kwargs[:senders],
+          reverse: kwargs[:reverse],
+          include_start_trx: kwargs[:include_start_trx]
         }.compact
-        params[:reverse] =
-          if kwargs[:reverse]
-            'true'
-          else
-            'false'
-          end
-        params[:include_start_trx] =
-          if kwargs[:include_start_trx]
-            'true'
-          else
-            'false'
-          end
 
-        encrypted_params = QuorumSdk::Utils.aes_encrypt({
-          Req: params
-        }.to_json, key: cipher_key)
-
-        payload = {
-          Req: Base64.strict_encode64(encrypted_params)
-        }
-
-        path = "api/v1/node/groupctn/#{group_id}"
-        list = client.post(path, **payload).body
-        puts list
+        path = "api/v1/node/#{group_id}/groupctn"
+        list = client.get(path, **params).body
 
         return list unless list.is_a?(Array)
+        return list if cipher_key.blank?
 
         list.each do |trx|
           next if trx['Data'].blank?

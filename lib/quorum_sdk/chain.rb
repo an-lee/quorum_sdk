@@ -7,7 +7,7 @@ require_relative 'client'
 
 module QuorumSdk
   # Wrapper for HTTP APIs as chain admin
-  class FullNode
+  class Chain
     attr_reader :chain_url, :jwt, :client
 
     def initialize(**kwargs)
@@ -17,8 +17,8 @@ module QuorumSdk
       @client = QuorumSdk::Client.new(@chain_url, @jwt)
     end
 
-    include QuorumSdk::FullNode::Chain
-    include QuorumSdk::FullNode::Group
-    include QuorumSdk::FullNode::Management
+    include QuorumSdk::Chain::Chain
+    include QuorumSdk::Chain::Group
+    include QuorumSdk::Chain::Management
   end
 end

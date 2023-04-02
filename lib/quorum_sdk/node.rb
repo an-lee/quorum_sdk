@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'client'
-require_relative 'light_node/node'
+require_relative 'light_node/trx'
 
 module QuorumSdk
   # Wrapper for HTTP APIs as light node client
-  class LightNode
+  class Node
     attr_reader :group_id, :group_name, :consensus_type, :encryption_type, :app_key, :owner_pubkey, :signature,
                 :cipher_key, :chain_url, :jwt, :client
 
@@ -31,6 +31,10 @@ module QuorumSdk
       @client = QuorumSdk::Client.new(@chain_url, @jwt)
     end
 
-    include QuorumSdk::LightNode::Node
+    include QuorumSdk::Node::Announce
+    include QuorumSdk::Node::Appconfig
+    include QuorumSdk::Node::Auth
+    include QuorumSdk::Node::Group
+    include QuorumSdk::Node::Trx
   end
 end
