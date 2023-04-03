@@ -4,6 +4,9 @@ module QuorumSdk
   class Chain
     # Wrapper for HTTP APIs for group
     module Group
+      def group(group_id)
+      end
+
       ARGUMENTS_FOR_CREATE_GROUP = %i[app_key group_name].freeze
       def create_group(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_CREATE_GROUP} must be provided" unless ARGUMENTS_FOR_CREATE_GROUP.all?(&->(arg) { arg.in? kwargs.keys })

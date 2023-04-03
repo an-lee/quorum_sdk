@@ -4,26 +4,14 @@ module QuorumSdk
   class Chain
     # Wrapper for HTTP APIs for chain
     module Chain
-      def trx(trx_id, group_id:)
-        raise ArgumentError, 'group_id must be provided' if group_id.blank?
+      def block(group_id, block_id)
+        path = "api/v1/block/#{group_id}/#{trx_id}"
+        client.get(path).body
+      end
 
+      def trx(group_id, trx_id)
         path = "api/v1/trx/#{group_id}/#{trx_id}"
-        r = client.get(path).body
-        r =
-          begin
-            JSON.parse r
-          rescue JSON::ParserError
-            r
-          end
-
-        group = groups['groups'].find(&->(g) { g['group_id'] == group_id })
-
-        if r['Data'].present? && group.present?
-          data = Base64.strict_decode64 r['Data']
-          r['Data'] = QuorumSdk::Utils.decrypt_trx_data data, key: group['cipher_key']
-        end
-
-        r
+        client.get(path).body
       end
     end
   end
