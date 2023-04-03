@@ -16,7 +16,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ```ruby
 # Initilize by seed url
-node = QuorumSdk::LightNode.new seed: "rum://...."
+node = QuorumSdk::Node.new seed: "rum://...."
 ```
 
 ### Send a trx
@@ -75,12 +75,18 @@ node.list_trx
 ### Initilize
 
 ```ruby
-node = QuorumSdk::FullNode.new chain_url: 'http://127.0.0.1:8002', jwt: ''
+chain = QuorumSdk::Chain.new chain_url: 'http://127.0.0.1:8002', jwt: ''
+
+# list joined groups
+chain.groups
+
+# network
+chain.network
 ```
 
 ## Proto
 
-Check all available proto types in [chain_pb.rb](./lib/proto/chain_pb.rb) and [activity_stream_pb.rb](./lib/proto/activity_stream_pb.rb).
+Check all available proto types in [chain_pb.rb](./lib/proto/chain_pb.rb).
 
 ## Development
 
