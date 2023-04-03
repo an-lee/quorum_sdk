@@ -3,6 +3,7 @@
 require_relative 'chain/chain'
 require_relative 'chain/group'
 require_relative 'chain/management'
+require_relative 'chain/node'
 require_relative 'client'
 
 module QuorumSdk
@@ -20,5 +21,6 @@ module QuorumSdk
     include QuorumSdk::Chain::Chain
     include QuorumSdk::Chain::Group
     include QuorumSdk::Chain::Management
+    include QuorumSdk::Chain::Node
   end
 end
