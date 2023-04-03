@@ -27,7 +27,7 @@ module QuorumSdk
         refute_nil r['TrxId']
       end
 
-      def test_get_trx
+      def test_get_block
         if @node.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
