@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'client'
-require_relative 'light_node/trx'
+require_relative 'node/announce'
+require_relative 'node/appconfig'
+require_relative 'node/auth'
+require_relative 'node/group'
+require_relative 'node/trx'
 
 module QuorumSdk
   # Wrapper for HTTP APIs as light node client

@@ -3,11 +3,11 @@
 require 'test_helper'
 
 module QuorumSdk
-  class LightNode
+  class Node
     # These tests depend on RUM server config in /config.json
-    class TestNode < Minitest::Test
+    class TestTrx < Minitest::Test
       def setup
-        @node = QuorumSdk::LightNode.new(seed: HTTP_SEED['seed']) if HTTP_SEED.present?
+        @node = QuorumSdk::Node.new(seed: HTTP_SEED['seed']) if HTTP_SEED.present?
       end
 
       def test_send_trx
@@ -25,7 +25,7 @@ module QuorumSdk
           content: "A random content #{id}"
         }
         trx = @node.build_trx(trx_id: id, data:, private_key: account.private_hex)
-        r = @node.send_trx trx
+        r = @node.send_trx(**trx)
         assert_equal id, r['trx_id']
       end
 
@@ -56,18 +56,8 @@ module QuorumSdk
           object: article
         }
         trx = @node.build_trx(data: activity, private_key: account.private_hex)
-        r = @node.send_trx trx
+        r = @node.send_trx(**trx)
         refute_nil r['trx_id']
-      end
-
-      def test_chain_data_group_info
-        if @node.blank?
-          puts '**Warning**setup a RUM server for HTTP API test'
-          return
-        end
-
-        r = @node.group_info
-        refute_nil r
       end
     end
   end

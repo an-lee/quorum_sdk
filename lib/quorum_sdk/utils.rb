@@ -50,7 +50,7 @@ module QuorumSdk
       end
 
       ARGUMENTS_FOR_ENCRYPT_TRX = %i[private_key group_id cipher_key data].freeze
-      def encrypt_trx(**kwargs)
+      def build_trx(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_ENCRYPT_TRX} must be provided" unless ARGUMENTS_FOR_ENCRYPT_TRX.all?(&->(arg) { arg.in? kwargs.keys })
 
         data =
@@ -60,29 +60,52 @@ module QuorumSdk
           else
             kwargs[:data].to_s
           end
-        encrypted_data = aes_encrypt data, key: kwargs[:cipher_key]
+        encrypted_data = aes_encrypt(data, key: kwargs[:cipher_key])
 
         account = QuorumSdk::Account.new priv: kwargs[:private_key]
 
-        msg =
+        trx =
           Quorum::Pb::Trx.new(
             TrxId: (kwargs[:trx_id] || SecureRandom.uuid),
             GroupId: kwargs[:group_id],
             Data: encrypted_data,
-            TimeStamp: (kwargs[:timestamp].to_i || (Time.now.to_f * 1e9).to_i),
+            TimeStamp: (kwargs[:timestamp].presence || (Time.now.to_f * 1e9)).to_i,
             Version: (kwargs[:version] || TRX_VERSION),
-            Expired: (kwargs[:expired].to_i || (30.seconds.from_now.to_f * 1e9).to_i),
             SenderPubkey: Base64.urlsafe_encode64(account.public_bytes_compressed, padding: false)
           )
 
-        hash = Digest::SHA256.hexdigest msg.to_proto
+        hash = Digest::SHA256.hexdigest trx.to_proto
         signature = account.sign [hash].pack('H*')
-        msg.SenderSign = [signature].pack('H*')
-        trx_json = {
-          TrxBytes: Base64.strict_encode64(msg.to_proto)
-        }
-        encrypted = aes_encrypt trx_json.to_json, key: kwargs[:cipher_key]
-        Base64.strict_encode64 encrypted
+        trx.SenderSign = [signature].pack('H*')
+
+        json = Quorum::Pb::Trx.encode_json trx
+        JSON.parse(json).deep_transform_keys! { |key| key.to_s.underscore.to_sym }
+      end
+
+      def verify_trx(trx = nil, **kwargs)
+        trx ||= kwargs
+        trx.deep_transform_keys! { |key| key.to_s.camelize.to_sym }
+        trx = trx.with_indifferent_access
+        trx['TimeStamp'] = trx['TimeStamp'].to_i if trx['TimeStamp'].present? && trx['TimeStamp'].is_a?(String)
+        trx['Expired'] = trx['Expired'].to_i if trx['Expired'].present? && trx['Expired'].is_a?(String)
+
+        signature = Base64.urlsafe_decode64(trx['SenderSign']).unpack1('H*')
+
+        trx = Quorum::Pb::Trx.new(
+          TrxId: trx['TrxId'],
+          GroupId: trx['GroupId'],
+          Data: Base64.decode64(trx['Data']),
+          TimeStamp: trx['TimeStamp'],
+          Expired: trx['Expired'],
+          Version: trx['Version'],
+          SenderPubkey: trx['SenderPubkey']
+        )
+
+        hash = Digest::SHA256.hexdigest trx.to_proto
+        public_key = Secp256k1::PublicKey.from_data(Base64.urlsafe_decode64(trx.SenderPubkey)).uncompressed.unpack1('H*')
+        recover_key = Eth::Signature.recover [hash].pack('H*'), signature
+
+        public_key == recover_key
       end
 
       def decrypt_trx(cipher, key:)

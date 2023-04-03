@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'full_node/chain'
-require_relative 'full_node/group'
-require_relative 'full_node/management'
+require_relative 'chain/chain'
+require_relative 'chain/group'
+require_relative 'chain/management'
 require_relative 'client'
 
 module QuorumSdk

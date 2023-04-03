@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module QuorumSdk
-  class FullNode
+  class Chain
     # These tests depend on RUM server config in /config.json
     class TestManagement < Minitest::Test
       def setup

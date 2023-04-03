@@ -25,7 +25,7 @@ module QuorumSdk
         raise ArgumentError, 'group_id must be provided' if group_id.blank?
 
         path = "api/v1/node/#{group_id}/userencryptpubkeys"
-        client.get(path, **params).body
+        client.get(path).body
       end
     end
   end

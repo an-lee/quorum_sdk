@@ -24,28 +24,29 @@ module QuorumSdk
       assert_equal parsed, seed
     end
 
-    def test_sign_trx
+    def test_build_trx
       seed = QuorumSdk::Utils.parse_seed SEED
-      data = Quorum::Pb::Object.new(
+      data = {
         type: 'Note',
         content: 'What'
-      )
+      }
 
-      trx_item = QuorumSdk::Utils.encrypt_trx(
+      trx = QuorumSdk::Utils.build_trx(
         trx_id: 'f6eecbcf-fa99-4f6c-bfa5-6a265c761996',
         group_id: seed[:group_id],
         data:,
         private_key: '0xd6c48ca889e67a07578e0709760f1b682fd52244b6a885f00bd17a84475948b5',
         cipher_key: seed[:cipher_key],
-        timestamp: 1_672_991_304_952_999_936,
-        expired: 1_672_991_334_953_000_000,
-        nonce: 1
+        timestamp: 1_672_991_304_952_999_936
       )
 
-      refute_nil trx_item
+      refute_nil trx[:sender_pubkey]
+      refute_nil trx[:sender_sign]
+      refute_nil trx[:data]
+      refute_nil trx[:trx_id]
     end
 
-    def test_decrypt_encrypted_trx
+    def test_valid_built_trx
       seed = QuorumSdk::Utils.parse_seed SEED
       account = QuorumSdk::Account.new
       private_key = account.private_hex
@@ -63,38 +64,45 @@ module QuorumSdk
         object: article
       }
 
-      trx_item = QuorumSdk::Utils.encrypt_trx(
+      trx = QuorumSdk::Utils.build_trx(
         data:,
         group_id: seed[:group_id],
         private_key:,
         cipher_key: seed[:cipher_key]
       )
 
-      trx = QuorumSdk::Utils.decrypt_trx(
-        trx_item,
-        key: seed[:cipher_key]
-      )
-
-      assert_equal 'Create', trx['Data']['type']
-      assert_equal type, trx['Data']['object']['type']
-      assert_equal name, trx['Data']['object']['name']
-      assert_equal content, trx['Data']['object']['content']
+      assert QuorumSdk::Utils.verify_trx(**trx)
     end
 
-    def test_decrypt_outside_trx
-      seed = QuorumSdk::Utils.parse_seed SEED
-      trx_id = 'f6eecbcf-fa99-4f6c-bfa5-6a265c761996'
+    def test_verify_trx_from_go
+      trx =
+        {
+          GroupId: '9d0966b6-4e0c-4b0b-99cc-1c8891d0d264',
+          Data: 'wRiA0iO6zM+4bOcmEaCzUqlxf/08GmvOWQXi/06tIqSx2HEVF7RE6Ag4dZOHGCLzTzlNnnAB5Sj1HzyadEI5eOBxdO7ZRN1Z+N+PU8WkRe4CD2z9GjRtWcYeYQ55lu27/HVK9yNAG4tUkRGyCmBwlOc11i1CXJ1Oy3FifCyDDVK5c86iTQ0Osx4cdGuobQ==',
+          SenderPubkey: 'AmSGoLh7Sibt9bB4Evmbr8zqfOFwH9aQz6R0dzRsE-zf',
+          SenderSign: 'jyzXY+ryPOt04ARxorJTnBzylIw2NnFxWNB1wHLp2AV9Pc0h0dAyGD2e7R0Dx3dxpvwQGgri35tvucQP95LmUQA=',
+          TimeStamp: '1680151626438620000',
+          Expired: '1680151656438620000',
+          TrxId: '888fea18-a417-4ca6-9216-a34082d2e833',
+          Version: '2.0.0'
+        }
 
-      trx_item = 'RkPbRmoAowX4k9NPE7g0+o2GZiqP+NC7uXX6/+95bqay8cV8QrYdDbDhAzam3OKB14JJLBCPcIlRg3qadMSTpMe7ETs+VJ4woHewxsuGQrBzc0fgMJ948vFMLxqvGIjqmgVG6XXFi+oAfE0zW0f4XTbgiYBR0NYvajUtuRVv0rqyt1wXt0M2uhQu7Ztz8HhmRYrMGRYj5Fbgr29G4HNQtIzro3DbgCJMa5Lm0jp9/ncIfTNsEWMC8kspYCMt4a7CKks1E+iUWMRrgSkXWfGVY+jQfz7Ds7ahiStAbp/C9df3ZnmHrGzKJAM2+lSoWxX+eChD11SiOLdzr2lkOKPH1Fqtuet9Xuc+RZU8IyWEv/HjX6ONbU8OMGG40YRpRUR18k7prICCAyO62EmwcJk1PXBgckKhS0OPaKNOZj1JITHdwBgyB9MBFy7owi2ALB+QnT70f8K5TltR9YJtNumdkVc24T6qkgMZT6aZhHWVJpEkMU3VAXQGtHlBD29A3uFg9lt0hShX3blmXJ1WHN4Bm3Fq7nbhJYxPK5EdYyY8ltrqBXMP4uVEjgNpAzgvpsMWZwfhvdTgwMBrkTg='
+      assert QuorumSdk::Utils.verify_trx trx
+    end
 
-      trx = QuorumSdk::Utils.decrypt_trx(
-        trx_item,
-        key: seed[:cipher_key]
-      )
+    def test_verify_trx_from_js
+      trx =
+        {
+          GroupId: 'caeeac75-62e8-4e0b-9ac7-a78c6f8ac7f8',
+          Data: 'eWxn/oYsJdUPVvJwkmvl0glHMO0P8SYSQUzsoyXgQhuhJ4aA66evPAL0kXhJuGlw7oVW+WK+FpZ/xyWSvr5rTRFfEYWxJfVqD1g5TnqRq3uEvM4J/6YtQJa8weGe7bsBYbMAOcuN9Q==',
+          SenderPubkey: 'A8hfNDAUJzdndxfHbZ3BrcooEY5zpMy9ajEk18mnh81V',
+          SenderSign: '9j26OsO1FDzj+3arU+9H9pTKTnqGjhKdP9EQ1JC1BZNwbzoZVZRKtqnpCHhVsRr9TyhAuxUGsR1VX8wjorkcbxs=',
+          TimeStamp: '1680148475255123456',
+          TrxId: '1621db68-c9b8-4654-bcba-014c68580791',
+          Version: '2.0.0'
+        }
 
-      refute_nil trx[:Data]
-      assert_equal trx_id, trx[:TrxId]
-      assert_equal seed[:group_id], trx[:GroupId]
+      assert QuorumSdk::Utils.verify_trx trx
     end
   end
 end
