@@ -2,7 +2,7 @@
 
 require_relative 'client'
 require_relative 'node/announce'
-require_relative 'node/appconfig'
+require_relative 'node/app_config'
 require_relative 'node/auth'
 require_relative 'node/group'
 require_relative 'node/trx'
@@ -36,7 +36,7 @@ module QuorumSdk
     end
 
     include QuorumSdk::Node::Announce
-    include QuorumSdk::Node::Appconfig
+    include QuorumSdk::Node::AppConfig
     include QuorumSdk::Node::Auth
     include QuorumSdk::Node::Group
     include QuorumSdk::Node::Trx

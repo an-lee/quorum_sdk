@@ -3,8 +3,8 @@
 module QuorumSdk
   class Node
     # Appconfig module
-    module Appconfig
-      def appconfig(key:, group_id: nil)
+    module AppConfig
+      def app_config(key, group_id: nil)
         group_id ||= @group_id
         raise ArgumentError, 'group_id must be provided' if group_id.blank?
         raise ArgumentError, 'key must be provided' if key.blank?
@@ -13,7 +13,7 @@ module QuorumSdk
         client.get(path).body
       end
 
-      def appconfig_keys(group_id: nil)
+      def app_config_keys(group_id: nil)
         group_id ||= @group_id
         raise ArgumentError, 'group_id must be provided' if group_id.blank?
 
