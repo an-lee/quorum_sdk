@@ -69,7 +69,7 @@ module QuorumSdk
             TrxId: (kwargs[:trx_id] || SecureRandom.uuid),
             GroupId: kwargs[:group_id],
             Data: encrypted_data,
-            TimeStamp: (Time.now.to_f * 1e9)).to_i,
+            TimeStamp: (Time.now.to_f * 1e9).to_i,
             Version: (kwargs[:version] || TRX_VERSION),
             SenderPubkey: Base64.urlsafe_encode64(account.public_bytes_compressed, padding: false)
           )

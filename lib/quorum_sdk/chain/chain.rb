@@ -4,8 +4,8 @@ module QuorumSdk
   class Chain
     # Wrapper for HTTP APIs for chain
     module Chain
-      def block(group_id, _block_id)
-        path = "api/v1/block/#{group_id}/#{trx_id}"
+      def block(group_id, block_id)
+        path = "api/v1/block/#{group_id}/#{block_id}"
         client.get(path).body
       end
 
