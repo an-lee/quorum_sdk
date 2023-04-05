@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'chain/app'
 require_relative 'chain/chain'
 require_relative 'chain/group'
 require_relative 'chain/management'
@@ -18,6 +19,7 @@ module QuorumSdk
       @client = QuorumSdk::Client.new(@chain_url, @jwt)
     end
 
+    include QuorumSdk::Chain::App
     include QuorumSdk::Chain::Chain
     include QuorumSdk::Chain::Group
     include QuorumSdk::Chain::Management
