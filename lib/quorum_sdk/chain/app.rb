@@ -19,7 +19,7 @@ module QuorumSdk
 
         path = "/app/api/v1/group/#{group_id}/content"
 
-        list = client.get(path).body
+        list = client.get(path, **params).body
 
         return list unless list.is_a?(Array)
 

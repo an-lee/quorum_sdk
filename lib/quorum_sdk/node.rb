@@ -29,8 +29,12 @@ module QuorumSdk
       @owner_pubkey = config[:owner_pubkey]
       @signature = config[:signature]
       @cipher_key = config[:cipher_key]
-      @chain_url = config[:chain_url]
-      @jwt = config[:jwt]
+
+      @chain_url = kwargs[:chain_url] || config[:chain_url]
+      @jwt = kwargs[:jwt] || config[:jwt]
+
+      raise ArgumentError, 'chain_url must be provided' if @chain_url.blank?
+      raise ArgumentError, 'jwt must be provided' if @jwt.blank?
 
       @client = QuorumSdk::Client.new(@chain_url, @jwt)
     end
