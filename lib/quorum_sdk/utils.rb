@@ -19,7 +19,7 @@ module QuorumSdk
         app_key = query_values['y']
         consensus_type = query_values['n'].to_s == '1' ? 'pos' : 'poa'
         encryption_type = query_values['e'].to_s == '0' ? 'public' : 'private'
-        chain_url = query_values['u'].split('|')
+        chain_url = query_values['u']
 
         {
           group_id:,
