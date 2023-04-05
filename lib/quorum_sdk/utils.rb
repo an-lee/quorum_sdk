@@ -108,28 +108,6 @@ module QuorumSdk
         public_key == recover_key
       end
 
-      def decrypt_trx(cipher, key:)
-        cipher = Base64.strict_decode64 cipher
-        trx_json = JSON.parse aes_decrypt(cipher, key:)
-        trx_bytes = Base64.strict_decode64 trx_json['TrxBytes']
-        trx = Quorum::Pb::Trx.decode trx_bytes
-
-        trx_without_sig = trx.dup
-        trx_without_sig.clear_SenderSign
-        hash = Digest::SHA256.hexdigest Quorum::Pb::Trx.encode(trx_without_sig)
-
-        signature = trx.SenderSign.unpack1('H*')
-        public_key = Secp256k1::PublicKey.from_data(Base64.urlsafe_decode64(trx.SenderPubkey)).uncompressed.unpack1('H*')
-        recover_key = Eth::Signature.recover [hash].pack('H*'), signature
-        raise QuorumSdk::Error, "Signature not verified: #{public_key} != #{recover_key}" unless public_key == recover_key
-
-        data = decrypt_trx_data(trx.Data, key:)
-
-        trx = JSON.parse Quorum::Pb::Trx.encode_json(trx)
-        trx['Data'] = data
-        trx.with_indifferent_access
-      end
-
       def decrypt_trx_data(cipher, key:)
         decrypted_data = aes_decrypt(cipher, key:)
         begin
