@@ -42,7 +42,7 @@ module QuorumSdk
       end
 
       def create_token(**kwargs)
-        path = '/app/api/v1/token/create'
+        path = '/app/api/v1/token'
         payload = {
           expires_at: kwargs[:expires_at],
           group_id: kwargs[:group_id],
@@ -50,6 +50,31 @@ module QuorumSdk
           role: kwargs[:role]
         }
         client.post(path, **payload).body
+      end
+
+      def revoke_token(**kwargs)
+        path = '/app/api/v1/token/revoke'
+        payload = {
+          group_id: kwargs[:group_id],
+          token: kwargs[:token],
+          role: kwargs[:role]
+        }.compact
+        client.post(path, **payload).body
+      end
+
+      def refresh_token(**kwargs)
+        path = '/app/api/v1/token/refresh'
+        client.post(path).body
+      end
+
+      def delete_token(**kwargs)
+        path = '/app/api/v1/token'
+        params = {
+          token: kwargs[:token],
+          role: kwargs[:role],
+          group_id: kwargs[:group_id]
+        }
+        client.delete(path, **params).body
       end
     end
   end

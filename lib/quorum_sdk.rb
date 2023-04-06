@@ -7,6 +7,7 @@ require 'bcrypt'
 require 'eth'
 require 'faraday'
 require 'faraday/retry'
+require 'jwt'
 require 'google/protobuf/well_known_types'
 
 require_relative 'proto/chain_pb'

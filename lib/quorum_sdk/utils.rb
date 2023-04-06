@@ -137,6 +137,10 @@ module QuorumSdk
         decipher.auth_tag = cipher[-16...]
         decipher.update(cipher[12...-16]) + decipher.final
       end
+
+      def decode_jwt(token)
+        JWT.decode token, nil, false
+      end
     end
   end
 end

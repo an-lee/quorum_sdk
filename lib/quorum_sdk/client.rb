@@ -36,5 +36,9 @@ module QuorumSdk
     def get(path, **params)
       @conn.get path, **params
     end
+
+    def delete(path, **params)
+      @conn.delete path, **params
+    end
   end
 end
