@@ -37,17 +37,17 @@ module QuorumSdk
         refute_nil r
       end
 
-      def test_auth_type
+      def test_auth_mode
         if @chain.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return
         end
 
-        r = @chain.auth_type('POST', @group_id)
+        r = @chain.auth_mode('POST', @group_id)
         refute_nil r['AuthType']
       end
 
-      def test_update_auth_type
+      def test_update_auth_mode
         if @chain.blank?
           puts '**Warning**setup a RUM server for HTTP API test'
           return

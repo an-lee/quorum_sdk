@@ -18,7 +18,7 @@ module QuorumSdk
         client.get(path).body
       end
 
-      def auth_type(trx_type, group_id)
+      def auth_mode(trx_type, group_id)
         raise ArgumentError, 'group_id must be provided' if group_id.blank?
 
         path = "api/v1/group/#{group_id}/trx/auth/#{trx_type}"
@@ -48,7 +48,7 @@ module QuorumSdk
         client.post(path, **payload).body
       end
 
-      ARGUMENTS_FOR_UPDATE_AUTH_MODE = %i[trx_auth_mode].freeze
+      ARGUMENTS_FOR_UPDATE_AUTH_MODE = %i[trx_auth_mode group_id].freeze
       def update_trx_auth_mode(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_UPDATE_AUTH_MODE} must be provided" unless ARGUMENTS_FOR_UPDATE_AUTH_MODE.all?(&->(arg) { arg.in? kwargs.keys })
 
@@ -72,7 +72,7 @@ module QuorumSdk
         )
       end
 
-      ARGUMENTS_FOR_UPDATE_ALLOW_LIST = %i[action pubkey].freeze
+      ARGUMENTS_FOR_UPDATE_ALLOW_LIST = %i[action pubkey group_id].freeze
       def update_allow_list(**kwargs)
         raise ArgumentError, "Keyword arguments #{ARGUMENTS_FOR_UPDATE_ALLOW_LIST} must be provided" unless ARGUMENTS_FOR_UPDATE_ALLOW_LIST.all?(&->(arg) { arg.in? kwargs.keys })
 
