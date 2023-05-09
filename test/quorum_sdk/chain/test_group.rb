@@ -9,7 +9,7 @@ module QuorumSdk
       def setup
         return if HTTP_SEED.blank?
 
-        @node = QuorumSdk::FullNode.new(
+        @node = QuorumSdk::Chain.new(
           chain_url: HTTP_SEED['chain_url'],
           jwt: HTTP_SEED['jwt']
         )
